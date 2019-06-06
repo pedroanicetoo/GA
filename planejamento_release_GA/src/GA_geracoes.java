@@ -11,6 +11,7 @@ public class GA_geracoes {
     private int tamanhoPopulacao;
     public int numGeracoes;
     private int elitismo;
+    private  double taxadeCruzamento;
     private double taxaMutacao;
     public ArrayList<int[]> populacao = new ArrayList();
     public ArrayList<int[]> novaPopulacao = new ArrayList();
@@ -21,10 +22,11 @@ public class GA_geracoes {
 
     //definindo numeros padroes
     public GA_geracoes() {
-        this.numGeracoes = 20;
-        this.tamanhoPopulacao = 50000;
+        this.numGeracoes = 2000;
+        this.tamanhoPopulacao = 100;
         this.elitismo = 1;
-        this.taxaMutacao = 0.001;
+        this.taxaMutacao = 0.01;
+        this.taxadeCruzamento = 0.6;
     }
 
 //Sets
@@ -76,18 +78,32 @@ public class GA_geracoes {
     public void novaGeracao() {
         Random random = new Random();
         int[] individuo;
-        for(int i= this.elitismo; i<this.tamanhoPopulacao;i++) {
+        int[] individuo2;
+        for(int i= this.elitismo; i<this.tamanhoPopulacao / 2 ;i++) {
             individuo = new int[this.parametrosDoProblema.tamanhoCromossomo];
+            individuo2 = new int[this.parametrosDoProblema.tamanhoCromossomo];
             int pai = this.Sorteio();
             int mae = this.Sorteio();
-            for(int o=0; o<this.parametrosDoProblema.tamanhoCromossomo;o++) {
-                if(i % 2 == 0)
-                    individuo[o] = this.populacao.get(pai)[o];
-                else
-                    individuo[o] = this.populacao.get(mae)[o];
+            double probilite = random.nextDouble();
+
+            if(probilite >= this.taxadeCruzamento) {
+                this.novaPopulacao.add(this.populacao.get(pai));
+                this.novaPopulacao.add(this.populacao.get(mae));
+            } else {
+                for(int o=0; o<this.parametrosDoProblema.tamanhoCromossomo;o++) {
+                    if(i % 2 == 0) {
+                        individuo[o] = this.populacao.get(pai)[o];
+                        individuo2[o] = this.populacao.get(mae)[o];
+                    } else {
+                        individuo[o] = this.populacao.get(mae)[o];
+                        individuo2[o] = this.populacao.get(pai)[o];
+                    }
+                }
             }
             individuo = this.Individuo.CorrigeIndividuo(individuo);
+            individuo2 = this.Individuo.CorrigeIndividuo(individuo2);
             this.novaPopulacao.add(individuo);
+            this.novaPopulacao.add(individuo2);
         }
     }
 
